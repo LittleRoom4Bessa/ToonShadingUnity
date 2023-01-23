@@ -4,6 +4,7 @@ Shader "ToonShade/Character_ToonMaster"
     {
         _ColorTint("Color Tint", Color) = (1,1,1,1)
         _MainTex("Base Color", 2D) = "white"{}
+        _ShadowColor("Shadow Color", Color) = (0.48,0.36,0.36,1)
     }
 
     SubShader
@@ -19,11 +20,13 @@ Shader "ToonShade/Character_ToonMaster"
             #pragma vertex vert
             #pragma fragment frag
 
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _ColorTint;
                 float4 _MainTex_ST;
+                half4 _ShadowColor;
             CBUFFER_END
 
             TEXTURE2D(_MainTex);
@@ -63,8 +66,8 @@ Shader "ToonShade/Character_ToonMaster"
 
                 Light main_light = GetMainLight(TransformWorldToShadowCoord(i.positionWS.xyz));
                 float NdotL = dot(i.normalWS, main_light.direction);
-                float4 ToonShadow = (float4)(NdotL + 1)/2;
-                half4 lgiht_color = ToonShadow * float4(main_light.color, 1);
+                float ToonShadow = smoothstep(0.2, 0.5 ,NdotL);
+                half4 lgiht_color =  lerp(_ShadowColor, float4(main_light.color, 1), ToonShadow);
                 final_color = base_color * lgiht_color;
                 return final_color;
 			}
