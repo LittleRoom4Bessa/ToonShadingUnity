@@ -45,10 +45,13 @@ Shader "ToonShade/Character_ToonMaster"
 
             v2f vert (appdata v)
             {
-                v2f o;                                                     
-                o.vertex = TransformObjectToHClip(v.positionOS.xyz);
-                o.positionWS = TransformObjectToWorld(v.positionOS.xyz);
-                o.normalWS = TransformObjectToWorld(v.normal);
+                v2f o;
+                VertexPositionInputs  PositionInputs = GetVertexPositionInputs(v.positionOS);
+                o.vertex = PositionInputs.positionCS;
+                o.positionWS = PositionInputs.positionWS;
+
+                VertexNormalInputs normal_inputs = GetVertexNormalInputs(v.normal);
+                o.normalWS = normal_inputs.normalWS;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
 			}
