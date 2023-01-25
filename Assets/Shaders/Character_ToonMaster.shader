@@ -5,6 +5,7 @@ Shader "ToonShade/Character_ToonMaster"
         _ColorTint("Color Tint", Color) = (1,1,1,1)
         _MainTex("Base Color", 2D) = "white"{}
         _ShadowColor("Shadow Color", Color) = (0.48,0.36,0.36,1)
+        [HDR]_EmissionColor("Emission Color", Color) = (1,1,1,1)
     }
 
     SubShader
@@ -27,6 +28,7 @@ Shader "ToonShade/Character_ToonMaster"
                 half4 _ColorTint;
                 float4 _MainTex_ST;
                 half4 _ShadowColor;
+                float4 _EmissionColor;
             CBUFFER_END
 
             TEXTURE2D(_MainTex);
@@ -68,7 +70,7 @@ Shader "ToonShade/Character_ToonMaster"
                 float NdotL = dot(i.normalWS, main_light.direction);
                 float ToonShadow = smoothstep(0.2, 0.5 ,NdotL);
                 half4 lgiht_color =  lerp(_ShadowColor, float4(main_light.color, 1), ToonShadow);
-                final_color = base_color * lgiht_color;
+                final_color = base_color * lgiht_color + _EmissionColor;
                 return final_color;
 			}
             
